@@ -5,6 +5,7 @@ using devops_course_backend.dto;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using devops_course_backend.services;
 
 namespace devops_course_backend.controller
 {
@@ -13,30 +14,24 @@ namespace devops_course_backend.controller
     [Authorize]
     [ApiController]
     [Route("[controller]/[action]")]
-    public class CustomerController(UserContext context) : ControllerBase
+    public class CustomerController : ControllerBase
     {
+        private readonly CustomerService _customerService;
+        private readonly UserContext _context;
+
+        public CustomerController(CustomerService customerService, UserContext context)
+        {
+            _customerService = customerService;
+            _context = context;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateCustomer()
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+            Customer customer = _customerService.CreateCustomerFromAuthRequest();
 
-            if (userEmail == null)
-            {
-                return BadRequest("Customer data is null.");
-            }
-
-            Customer customer = new Customer
-            { 
-                Email = userEmail, 
-                Name = userEmail, 
-                CreatedAt = DateTime.UtcNow 
-            };
-            customer.CreatedAt = DateTime.UtcNow;
-
-            await context.Customers.AddAsync(customer);
-            await context.SaveChangesAsync();
+            await _context.Customers.AddAsync(customer);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(CreateCustomer), new { email = customer.Email }, customer);
         }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
+using devops_course_backend.services;
 
 namespace devops_course_backend
 {
@@ -40,8 +41,11 @@ namespace devops_course_backend
                 googleOptions.CallbackPath = "/signin-google";
             });
 
+            services.AddHttpContextAccessor();
+            services.AddScoped<CustomerService>();
             services.AddControllers();
         }
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
