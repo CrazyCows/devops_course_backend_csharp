@@ -1,0 +1,14 @@
+version: '1.0'
+name: devops_school
+
+services:
+  db:
+    container_name: school_devops
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
