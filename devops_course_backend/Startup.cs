@@ -20,18 +20,17 @@ namespace devops_course_backend
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddDbContext<UserContext>(options =>
                 options.UseNpgsql("Host=localhost;Database=mydb;Username=myuser;Password=mypassword"));
-
 
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            .AddCookie(options => {
+            .AddCookie(options =>
+            {
                 options.Cookie.IsEssential = true;
             })
             .AddGoogle(googleOptions =>
@@ -46,8 +45,10 @@ namespace devops_course_backend
             services.AddControllers();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserContext context)
         {
+            context.Database.EnsureCreated();
+            context.SaveChanges();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
