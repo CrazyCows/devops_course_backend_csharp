@@ -14,26 +14,25 @@ namespace devops_course_backend.controller
     [Authorize]
     [ApiController]
     [Route("[controller]/[action]")]
-    public class CustomerController : ControllerBase
+    public class CustomerController(CustomerService customerService, UserContext context) : ControllerBase
     {
-        private readonly CustomerService _customerService;
-        private readonly UserContext _context;
-
-        public CustomerController(CustomerService customerService, UserContext context)
-        {
-            _customerService = customerService;
-            _context = context;
-        }
 
         [HttpPost]
         public async Task<IActionResult> CreateCustomer()
         {
-            Customer customer = _customerService.CreateCustomerFromAuthRequest();
+            Customer customer = customerService.CreateCustomerFromAuthRequest();
 
-            await _context.Customers.AddAsync(customer);
-            await _context.SaveChangesAsync();
+            var CustomerExists = await context.Customers.FirstOrDefaultAsync(c => c.Email == customer.Email);
 
-            return CreatedAtAction(nameof(CreateCustomer), new { email = customer.Email }, customer);
+            if (CustomerExists == null)
+            {
+                await context.Customers.AddAsync(customer);
+                await context.SaveChangesAsync();
+                return CreatedAtAction(nameof(CreateCustomer), new { email = customer.Email }, customer);
+            }
+            return Ok( new { message = "Customer already exists" } );
+
+
         }
     }
 

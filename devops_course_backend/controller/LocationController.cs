@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks;
 using devops_course_backend.dal;
 using System.Security.Claims;
+using devops_course_backend.services;
 
 
 namespace devops_course_backend.controller
@@ -16,29 +17,13 @@ namespace devops_course_backend.controller
 
     [ApiController]
     [Route("[controller]/[action]")]
-    public class LocationController(UserContext context) : ControllerBase
+    public class LocationController(UserContext context, CustomerService customerService) : ControllerBase
     {
 
         [HttpPost]
         public async Task<IActionResult> SignInOnLocation([FromBody] Location location)
         {
-
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (userEmail == null)
-            {
-                return BadRequest("Customer data is null.");
-            }
-
-            Customer customer = new Customer
-            {
-                Email = userEmail,
-                Name = userEmail,
-                CreatedAt = DateTime.UtcNow
-            };
-            customer.CreatedAt = DateTime.UtcNow;
+            Customer customer = customerService.CreateCustomerFromAuthRequest();
 
             int CustomerId;
             if (location == null)
@@ -90,21 +75,8 @@ namespace devops_course_backend.controller
         [HttpPost]
         public async Task<IActionResult> SignOutOnLocation([FromBody] Location location)
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
-            var userEmail = HttpContext.User.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (userEmail == null)
-            {
-                return BadRequest("Customer data is null.");
-            }
-
-            Customer customer = new Customer
-            {
-                Email = userEmail,
-                Name = userEmail,
-                CreatedAt = DateTime.UtcNow
-            };
+            Customer customer = customerService.CreateCustomerFromAuthRequest();
 
             if (location == null)
             {

@@ -12,13 +12,11 @@ namespace devops_course_backend.services
     public class CustomerService(IHttpContextAccessor contextAccessor)
     {
 
-        private readonly IHttpContextAccessor _contextAccessor = contextAccessor;
-
         public Customer CreateCustomerFromAuthRequest()
         {
-            var userId = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
-            var userEmail = _contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
+            var userId = contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userName = contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
+            var userEmail = contextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
 
             if (string.IsNullOrEmpty(userEmail))
             {
@@ -28,7 +26,7 @@ namespace devops_course_backend.services
             Customer customer = new Customer
             {
                 Email = userEmail,
-                Name = userEmail,
+                Name = userName,
                 CreatedAt = DateTime.UtcNow
             };
             return customer;
