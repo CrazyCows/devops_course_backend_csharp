@@ -31,11 +31,11 @@ namespace devops_course_backend.dto
         [Required]
         public required Location SignInLocation { get; set; }
 
-        public Location? SignOutLocation { get; set; } // Nullable for future sign-out
-        public DateTime SignInTime { get; set; } // Track when signed in
-        public DateTime? SignOutTime { get; set; } // Nullable for future sign-out time
+        public Location? SignOutLocation { get; set; }
+        public DateTime SignInTime { get; set; }
+        public DateTime? SignOutTime { get; set; }
 
-        public int CustomerId { get; set; } // Foreign key for Customer
+        public int CustomerId { get; set; }
         [Required]
         public required Customer Customer { get; set; }
 
